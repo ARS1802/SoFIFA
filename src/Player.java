@@ -33,6 +33,6 @@ public class Player implements Comparable<Player> {
 
     @Override
     public int compareTo(Player o) {
-        return 0;
+        return 1;
     }
 }
