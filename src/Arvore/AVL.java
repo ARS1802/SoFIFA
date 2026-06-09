@@ -243,10 +243,10 @@ public class AVL<T extends Comparable<T>> {
         String left = preOrder(data.getLeft());
         String right = preOrder(data.getRight());
         if(!left.isEmpty()){
-            result += ", "  + left;
+            result += "\n"  + left;
         }
         if(!right.isEmpty()){
-            result +=", "  + right;
+            result +="\n"  + right;
         }
 
         return result;
@@ -261,11 +261,11 @@ public class AVL<T extends Comparable<T>> {
         String right = inOrder(data.getRight());
 
         if(!left.isEmpty()){
-            result += left + ", ";
+            result += left + "\n";
         }
         result += data.getElement();
         if(!right.isEmpty()){
-            result +=", "  + right;
+            result +="\n"  + right;
         }
 
         return result;
@@ -281,10 +281,10 @@ public class AVL<T extends Comparable<T>> {
         String right = posOrder(data.getRight());
 
         if(!left.isEmpty()){
-            result += left + ", ";
+            result += left + "\n";
         }
         if(!right.isEmpty()){
-            result += right + ", ";
+            result += right + "\n";
         }
         result += data.getElement();
 
