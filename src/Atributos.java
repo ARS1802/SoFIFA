@@ -25,6 +25,35 @@ public enum Atributos {
         this.indice = indice;
     }
 
+    @SuppressWarnings("unchecked")
+    public static <T> T parse(String tipo, String data) {
+        for (Atributos atributo : values()) {
+            if (atributo.colunaCsv.equals(tipo)) {
+                return (T) atributo.parse(data);
+            }
+        }
+        throw new IllegalArgumentException("Coluna CSV desconhecida: " + tipo);
+    }
+
+    private Object parse(String data) {
+        if (this.tipo == String.class) {
+            return data;
+        }
+        if (data == null || data.isBlank()) {
+            return null;
+        }
+        if (this.tipo == Integer.class) {
+            return Integer.parseInt(data);
+        }
+        if (this.tipo == Long.class) {
+            return Long.parseLong(data);
+        }
+        if (this.tipo == LocalDate.class) {
+            return LocalDate.parse(data);
+        }
+        throw new IllegalArgumentException("Tipo sem parse configurado: " + this.tipo.getName());
+    }
+
     public String colunaCsv() {
         return colunaCsv;
     }
