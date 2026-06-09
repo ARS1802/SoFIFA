@@ -1,3 +1,5 @@
+package Arvore;
+
 public class AVL<T extends Comparable<T>> {
 
     private TreeNode<T> root;

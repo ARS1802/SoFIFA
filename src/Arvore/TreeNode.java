@@ -1,3 +1,5 @@
+package Arvore;
+
 public class TreeNode<T> {
     private TreeNode<T> left;
     private T element;
@@ -61,6 +63,4 @@ public class TreeNode<T> {
     public String toString() {
         return element.toString();
     }
-
-
 }

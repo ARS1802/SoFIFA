@@ -7,8 +7,8 @@ public class Player implements Comparable<Player> {
     private String longName;
     private Integer overall;
     private Integer potential;
-    private Long valueEur;
-    private Long wageEur;
+    private Double valueEur;
+    private Double wageEur;
     private Integer age;
     private LocalDate dob;
     private Integer heightCm;
@@ -34,5 +34,14 @@ public class Player implements Comparable<Player> {
     @Override
     public int compareTo(Player o) {
         return 1;
+    }
+
+    @Override
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append(sofifaId).append(", ");
+        sb.append(shortName).append(", ");
+        sb.append(age).append(", ");
+        return sb.toString();
     }
 }

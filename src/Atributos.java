@@ -1,4 +1,12 @@
 import java.time.LocalDate;
+//===========================
+/*
+    String colunaCsv -> nome das colunas em input/players_22.csv
+    Class<?> tipo -> se o dado é Integer, String, Double ou LocalDate
+    int indice -> linha de input/players_22.csv se torna um Array
+                    [158023, https://sofifa.com/player/158023/lionel-messi/220002, L. Messi, Lionel Andrés Messi Cuccittini ...]
+*/
+//===========================
 
 public enum Atributos {
     SOFIFA_ID("sofifa_id", Integer.class,0),
@@ -7,8 +15,8 @@ public enum Atributos {
     LONG_NAME("long_name", String.class,3),
     OVERALL("overall", Integer.class,5),
     POTENTIAL("potential", Integer.class,6),
-    VALUE_EUR("value_eur", Long.class,7),
-    WAGE_EUR("wage_eur", Long.class,8),
+    VALUE_EUR("value_eur", Double.class,7),
+    WAGE_EUR("wage_eur", Double.class,8),
     AGE("age", Integer.class,9),
     DOB("dob", LocalDate.class,10),
     HEIGHT_CM("height_cm", Integer.class,11),
@@ -47,6 +55,9 @@ public enum Atributos {
         }
         if (this.tipo == Long.class) {
             return Long.parseLong(data);
+        }
+        if (this.tipo == Double.class) {
+            return Double.parseDouble(data);
         }
         if (this.tipo == LocalDate.class) {
             return LocalDate.parse(data);

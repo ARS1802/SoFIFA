@@ -1,3 +1,6 @@
+import Arvore.AVL;
+import tools.Document;
+
 import java.io.FileInputStream;
 import java.util.Scanner;
 
@@ -5,15 +8,18 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) throws Exception {
         AVL<Player> arvore_lobotomia = new AVL<>();
+        Document planilha = new Document("input/players_22.csv");
+        planilha.readLine();
+        Player a = new Player(planilha.readLine());
+        Player b = new Player(planilha.readLine());
+        Player c = new Player(planilha.readLine());
+        System.out.println(a);
+        System.out.println(b);
+        System.out.println(c);
 
-        Scanner sc = new Scanner(new FileInputStream("input/players_22.csv"));
-        int count = 0;
-        while (sc.hasNextLine()) {
-            String[] line = sc.nextLine().split(",");
-            Player entry = new Player(line);
-            arvore_lobotomia.add(entry);
-            System.out.println(count++);
-        }
+        arvore_lobotomia.add(a);
+        arvore_lobotomia.add(b);
+        arvore_lobotomia.add(c);
         System.out.println(arvore_lobotomia);
     }
 }
