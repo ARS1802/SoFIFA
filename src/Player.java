@@ -1,47 +1,139 @@
-import java.time.LocalDate;
+import java.util.Comparator;
 
-public class Player implements Comparable<Player> {
-    private Integer sofifaId;
-    private String playerUrl;
-    private String shortName;
-    private String longName;
-    private Integer overall;
-    private Integer potential;
-    private Double valueEur;
-    private Double wageEur;
-    private Integer age;
-    private LocalDate dob;
-    private Integer heightCm;
-    private Integer weightKg;
-    private String playerFaceUrl;
+public class Player implements Comparable<Player>{
+    public int treeValue = 0;
+
+    private final Integer playerId;
+    private final String shortName;
+    private final String longName;
+    private final String playerPositions;
+    private final Integer overall;
+    private final Integer potential;
+    private final Double valueEur;
+    private final Double wageEur;
+    private final Integer age;
+    private final Integer heightCm;
+    private final Integer weightKg;
+    private final Integer clubTeamId;
+    private final String clubName;
 
     Player(String[] s){
-        sofifaId = Atributos.parse("sofifa_id", s[Atributos.SOFIFA_ID.indice]);
-        playerUrl = Atributos.parse("player_url", s[Atributos.PLAYER_URL.indice]);
+        playerId = Atributos.parse("player_id", s[Atributos.PLAYER_ID.indice]);
         shortName = Atributos.parse("short_name", s[Atributos.SHORT_NAME.indice]);
         longName = Atributos.parse("long_name", s[Atributos.LONG_NAME.indice]);
+        playerPositions = Atributos.parse("player_positions", s[Atributos.PLAYER_POSITIONS.indice]);
         overall = Atributos.parse("overall", s[Atributos.OVERALL.indice]);
         potential = Atributos.parse("potential", s[Atributos.POTENTIAL.indice]);
         valueEur = Atributos.parse("value_eur", s[Atributos.VALUE_EUR.indice]);
         wageEur = Atributos.parse("wage_eur", s[Atributos.WAGE_EUR.indice]);
         age = Atributos.parse("age", s[Atributos.AGE.indice]);
-        dob = Atributos.parse("dob", s[Atributos.DOB.indice]);
         heightCm = Atributos.parse("height_cm", s[Atributos.HEIGHT_CM.indice]);
         weightKg = Atributos.parse("weight_kg", s[Atributos.WEIGHT_KG.indice]);
-        playerFaceUrl = Atributos.parse("player_face_url", s[Atributos.PLAYER_FACE_URL.indice]);
+        clubTeamId = Atributos.parse("club_team_id", s[Atributos.CLUB_TEAM_ID.indice]);
+        clubName = Atributos.parse("club_name", s[Atributos.CLUB_NAME.indice]);
     }
 
     @Override
-    public int compareTo(Player o) {
-        return 1;
+    public int compareTo(Player p){
+        return this.playerId.compareTo(p.playerId);
+    }
+
+    public static Comparator<Player> comparandoPor(Atributos... atributos){
+        return (playerAtual, outroPlayer) -> playerAtual.compareTo(outroPlayer, atributos);
+    }
+
+    public int compareTo(Player p, Atributos... atributos){
+        if(atributos == null || atributos.length == 0){
+            return compareTo(p);
+        }
+
+        for(Atributos atributo : atributos){
+            int resultado = compararValores(valorDe(atributo), p.valorDe(atributo));
+
+            if(resultado != 0){
+                return resultado;
+            }
+        }
+
+        return 0;
+    }
+
+    private Comparable<?> valorDe(Atributos atributo){
+        switch(atributo){
+            case PLAYER_ID:
+                return playerId;
+            case SHORT_NAME:
+                return shortName;
+            case LONG_NAME:
+                return longName;
+            case PLAYER_POSITIONS:
+                return playerPositions;
+            case OVERALL:
+                return overall;
+            case POTENTIAL:
+                return potential;
+            case VALUE_EUR:
+                return valueEur;
+            case WAGE_EUR:
+                return wageEur;
+            case AGE:
+                return age;
+            case HEIGHT_CM:
+                return heightCm;
+            case WEIGHT_KG:
+                return weightKg;
+            case CLUB_TEAM_ID:
+                return clubTeamId;
+            case CLUB_NAME:
+                return clubName;
+            default:
+                throw new IllegalArgumentException("Atributo sem comparacao configurada: " + atributo);
+        }
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private int compararValores(Comparable valorAtual, Comparable valorOutro){
+        if(valorAtual == null && valorOutro == null){
+            return 0;
+        }
+        if(valorAtual == null){
+            return 1;
+        }
+        if(valorOutro == null){
+            return -1;
+        }
+
+        return valorAtual.compareTo(valorOutro);
     }
 
     @Override
     public String toString(){
-        StringBuilder sb = new StringBuilder();
-        sb.append(sofifaId).append(", ");
-        sb.append(shortName).append(", ");
-        sb.append(age).append(", ");
-        return sb.toString();
+        return csvValue(playerId) + "," +
+                csvValue(shortName) + "," +
+                csvValue(longName) + "," +
+                csvValue(playerPositions) + "," +
+                csvValue(overall) + "," +
+                csvValue(potential) + "," +
+                csvValue(valueEur) + "," +
+                csvValue(wageEur) + "," +
+                csvValue(age) + "," +
+                csvValue(heightCm) + "," +
+                csvValue(weightKg) + "," +
+                csvValue(clubTeamId) + "," +
+                csvValue(clubName);
+    }
+
+    private String csvValue(Object value){
+        if(value == null){
+            return "";
+        }
+
+        String text = value.toString();
+
+        if(text.contains(",") || text.contains("\"") || text.contains("\n")){
+            return "\"" + text.replace("\"", "\"\"") + "\"";
+        }
+
+        return text;
     }
 }

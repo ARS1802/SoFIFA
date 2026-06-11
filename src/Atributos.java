@@ -1,27 +1,26 @@
-import java.time.LocalDate;
 //===========================
 /*
-    String colunaCsv -> nome das colunas em input/players_22.csv
-    Class<?> tipo -> se o dado é Integer, String, Double ou LocalDate
-    int indice -> linha de input/players_22.csv se torna um Array
-                    [158023, https://sofifa.com/player/158023/lionel-messi/220002, L. Messi, Lionel Andrés Messi Cuccittini ...]
+    String colunaCsv -> nome das colunas em input/FC26_20250921.csv
+    Class<?> tipo -> se o dado é Integer, String ou Double
+    int indice -> cada linha de input/FC26_20250921.csv se torna um Array
+                    [239085, https://sofifa.com/player/239085/..., 26, ...]
 */
 //===========================
 
 public enum Atributos {
-    SOFIFA_ID("sofifa_id", Integer.class,0),
-    PLAYER_URL("player_url", String.class, 1),
-    SHORT_NAME("short_name", String.class, 2),
-    LONG_NAME("long_name", String.class,3),
-    OVERALL("overall", Integer.class,5),
-    POTENTIAL("potential", Integer.class,6),
-    VALUE_EUR("value_eur", Double.class,7),
-    WAGE_EUR("wage_eur", Double.class,8),
-    AGE("age", Integer.class,9),
-    DOB("dob", LocalDate.class,10),
-    HEIGHT_CM("height_cm", Integer.class,11),
-    WEIGHT_KG("weight_kg", Integer.class,12),
-    PLAYER_FACE_URL("player_face_url", String.class,105);
+    PLAYER_ID("player_id", Integer.class, 0),
+    SHORT_NAME("short_name", String.class, 5),
+    LONG_NAME("long_name", String.class, 6),
+    PLAYER_POSITIONS("player_positions", String.class, 7),
+    OVERALL("overall", Integer.class, 8),
+    POTENTIAL("potential", Integer.class, 9),
+    VALUE_EUR("value_eur", Double.class, 10),
+    WAGE_EUR("wage_eur", Double.class, 11),
+    AGE("age", Integer.class, 12),
+    HEIGHT_CM("height_cm", Integer.class, 14),
+    WEIGHT_KG("weight_kg", Integer.class, 15),
+    CLUB_TEAM_ID("club_team_id", Integer.class, 19),
+    CLUB_NAME("club_name", String.class, 20);
 
     private final String colunaCsv;
     private final Class<?> tipo;
@@ -58,9 +57,6 @@ public enum Atributos {
         }
         if (this.tipo == Double.class) {
             return Double.parseDouble(data);
-        }
-        if (this.tipo == LocalDate.class) {
-            return LocalDate.parse(data);
         }
         throw new IllegalArgumentException("Tipo sem parse configurado: " + this.tipo.getName());
     }
