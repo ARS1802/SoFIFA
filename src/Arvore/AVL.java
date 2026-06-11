@@ -12,9 +12,11 @@ public class AVL<T> {
 
     private TreeNode<T> root;
     private final Comparator<? super T> comparator;
+    private int nodeAmount = 0;
 
     public AVL(TreeNode<T> data, Comparator<? super T> comparator) {
         this.root = data;
+        nodeAmount++;
         this.comparator = comparator;
     }
 
@@ -45,6 +47,7 @@ public class AVL<T> {
             this.root = new TreeNode<>(value);
             return;
         }
+        nodeAmount++;
         addRecursivelly(value, root, null);
     }
 
@@ -52,7 +55,7 @@ public class AVL<T> {
         if(this.root == null){
             return false;
         }
-
+        nodeAmount--;
         return removeRecursivelly(value, this.root, null);
 
 
@@ -243,6 +246,10 @@ public class AVL<T> {
             parent.setRight(temp);
         }
 
+    }
+
+    public int getSize() {
+        return nodeAmount;
     }
 
     private void rotateLeft(TreeNode<T> data, TreeNode<T> parent){

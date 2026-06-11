@@ -1,47 +1,29 @@
 import Arvore.AVL;
 import tools.Document;
 
+import javax.print.Doc;
+import java.util.List;
+
 public class Main {
     public static void main(String[] args) throws Exception {
         Document planilha = new Document("input/FC26_20250921.csv");
         planilha.readLine();
 
-        Player a = new Player(planilha.readLine());
-        Player b = new Player(planilha.readLine());
-        Player c = new Player(planilha.readLine());
+        AVL<Player> avlteste = new AVL<>(Player.comparandoPor(Atributos.POTENTIAL));
+        while(planilha.readerHasNextLine()){
+            avlteste.add(new Player(planilha.readLine()));
+        }
+        System.out.println("AVL TESTE (maior potencial):");
 
-        AVL<Player> porId = new AVL<>(
-                Player.comparandoPor(Atributos.SHORT_NAME),
-                a,
-                b,
-                c
-        );
-
-        AVL<Player> porNomeDepoisId = new AVL<>(
-                Player.comparandoPor(Atributos.PLAYER_ID, Atributos.SHORT_NAME),
-                a,
-                b,
-                c
-        );
-
-        AVL<Player> porOverallDepoisPotencialDepoisNome = new AVL<>(
-                new Player[]{a, b, c},
-                Player.comparandoPor(Atributos.OVERALL, Atributos.POTENTIAL, Atributos.SHORT_NAME)
-        );
-
-        System.out.println("Ordenado por SHORT_NAME:");
-        System.out.println(porId);
-
-        System.out.println("\nOrdenado por PLAYER_ID e, em caso de empate, SHORT_NAME:");
-        System.out.println(porNomeDepoisId);
-
-        System.out.println("\nOrdenado por OVERALL, depois POTENTIAL, depois SHORT_NAME:");
-        System.out.println(porOverallDepoisPotencialDepoisNome);
-
+        System.out.println(avlteste);
         planilha.setOutputFile("");
-        planilha.writeLine(a);
-        planilha.writeLine(b);
-        planilha.writeLine(c);
+        planilha.writeLine(avlteste.toString());
+
+        //Jogador com >menor< potencial de todos:
+        //76599,Li Biao,Biao Li,"RM, RW",49,>49<,50000.0,950.0,27,182,72,131531,Yunnan Yukun
+
+        //Jogador com <maior> potencial de todos:
+        //277643,Lamine Yamal,Lamine Yamal Nasraoui Ebanaلامين يامال نصراوي إبانا,"RM, RW",89,>95<,1.47E8,100000.0,17,180,72,241,FC Barcelona
 
     }
 }

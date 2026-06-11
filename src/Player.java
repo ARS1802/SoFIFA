@@ -64,7 +64,7 @@ public class Player{
 
     public int compareTo(Player p, Atributos... atributos){
         if(atributos == null || atributos.length == 0){
-            return compareTo(p);
+            return compararValores(playerId, p.playerId);
         }
 
         for(Atributos atributo : atributos){
@@ -75,7 +75,7 @@ public class Player{
             }
         }
 
-        return 0;
+        return compararValores(playerId, p.playerId);
     }
 
     private Comparable<?> valorDe(Atributos atributo){
