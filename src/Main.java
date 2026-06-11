@@ -11,14 +11,14 @@ public class Main {
         Player c = new Player(planilha.readLine());
 
         AVL<Player> porId = new AVL<>(
-                Player.comparandoPor(Atributos.PLAYER_ID),
+                Player.comparandoPor(Atributos.SHORT_NAME),
                 a,
                 b,
                 c
         );
 
         AVL<Player> porNomeDepoisId = new AVL<>(
-                Player.comparandoPor(Atributos.SHORT_NAME, Atributos.PLAYER_ID),
+                Player.comparandoPor(Atributos.PLAYER_ID, Atributos.SHORT_NAME),
                 a,
                 b,
                 c
@@ -29,10 +29,10 @@ public class Main {
                 Player.comparandoPor(Atributos.OVERALL, Atributos.POTENTIAL, Atributos.SHORT_NAME)
         );
 
-        System.out.println("Ordenado por PLAYER_ID:");
+        System.out.println("Ordenado por SHORT_NAME:");
         System.out.println(porId);
 
-        System.out.println("\nOrdenado por SHORT_NAME e, em caso de empate, PLAYER_ID:");
+        System.out.println("\nOrdenado por PLAYER_ID e, em caso de empate, SHORT_NAME:");
         System.out.println(porNomeDepoisId);
 
         System.out.println("\nOrdenado por OVERALL, depois POTENTIAL, depois SHORT_NAME:");

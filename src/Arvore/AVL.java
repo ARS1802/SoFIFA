@@ -1,23 +1,21 @@
 package Arvore;
 
 import java.util.Comparator;
-
+//======== Alterações ==========
+/*
+*       => AVL<T extends Comparable<T>> -> AVL<T>
+*       => construtor AVL exige Comparator (Faça Player.comparandoPor(Atributos.PLAYER_ID); como default!)
+*       => .comparTo -> comparator.compare(T left, T right)
+ */
+//==============================
 public class AVL<T> {
 
     private TreeNode<T> root;
     private final Comparator<? super T> comparator;
 
-    public AVL(TreeNode<T> data) {
-        this(data, naturalComparator());
-    }
-
     public AVL(TreeNode<T> data, Comparator<? super T> comparator) {
         this.root = data;
         this.comparator = comparator;
-    }
-
-    public AVL(){
-        this(naturalComparator());
     }
 
     public AVL(Comparator<? super T> comparator){
@@ -40,15 +38,6 @@ public class AVL<T> {
         for(T value : values){
             add(value);
         }
-    }
-
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private static <T> Comparator<T> naturalComparator(){
-        return (left, right) -> ((Comparable) left).compareTo(right);
-    }
-
-    private int compare(T left, T right){
-        return comparator.compare(left, right);
     }
 
     public void add(T value){
@@ -75,7 +64,7 @@ public class AVL<T> {
         }
 
         boolean removed = false;
-        int comparison = compare(value, node.getElement());
+        int comparison = comparator.compare(value, node.getElement());
 
         if(comparison < 0){
             removed = removeRecursivelly(value, node.getLeft(), node);
@@ -188,15 +177,15 @@ public class AVL<T> {
         if (data == null){
             return false;
         }
-        if (compare(value, data.getElement()) == 0){
+        if (comparator.compare(value, data.getElement()) == 0){
             return true;
         }
 
-        if(compare(value, data.getElement()) < 0){ // Entrada e menor que o node (esta na esquerda)
+        if(comparator.compare(value, data.getElement()) < 0){ // Entrada e menor que o node (esta na esquerda)
             return containsRecursivelly(value, data.getLeft());
         }
 
-        else if(compare(value, data.getElement()) > 0){// Entrada e maior que o node (esta na direita)
+        else if(comparator.compare(value, data.getElement()) > 0){// Entrada e maior que o node (esta na direita)
             return containsRecursivelly(value, data.getRight());
         }
 
@@ -204,7 +193,7 @@ public class AVL<T> {
     }
 
     private void addRecursivelly(T value, TreeNode<T> data, TreeNode<T> parent){
-        if(compare(value, data.getElement()) < 0){ // Entrada e menor que o node (esta na esquerda)
+        if(comparator.compare(value, data.getElement()) < 0){ // Entrada e menor que o node (esta na esquerda)
             if(data.getLeft() == null){
                 data.setLeft(new TreeNode<>(value));
             }else{
@@ -212,7 +201,7 @@ public class AVL<T> {
             }
         }
 
-        else if(compare(value, data.getElement()) > 0){// Entrada e maior que o node (esta na direita)
+        else if(comparator.compare(value, data.getElement()) > 0){// Entrada e maior que o node (esta na direita)
             if(data.getRight() == null){
                 data.setRight(new TreeNode<>(value));
             }else{

@@ -1,8 +1,26 @@
 import java.util.Comparator;
 
-public class Player implements Comparable<Player>{
-    public int treeValue = 0;
 
+//      Player inicialmente implements Comparable<Player>
+//      Entretanto, o metodo abaixo não permite que Atributos sejam passados!
+//    @Override
+//    public int compareTo(Player o) {
+//        return playerAtual.compareTo(outroPlayer, atributos);
+//    }
+
+//============================================================
+/*
+ *       => interface Comparator<T> recebe os atributos
+ *       => sobrescreve int compare(T obj1, T obj2) passando os atributos para um metodo prórpio
+ *       => este metodo próprio é o compareTo(Player p, Atributos... atributos)
+ *       => valorDe() retorna o respectivo atributo de sua respectiva classe.
+ *               obs: todos os atributos de Player são do tipo Wrapper Classes, as quais implementam a interface Comaprables.
+ *                    Possuindo isso em comum, todas implementam o próprio .compareTo()
+ *                    Graças a isso, valorDe() retorna um Comparable da classe respectiva.
+ *       => compararValores(Comparable valorAtual, Comparable valorOutro) recebe os atributos de Player e retorna o compareTo() respectivo ao seu tipo.
+ */
+//===========================================================
+public class Player{
     private final Integer playerId;
     private final String shortName;
     private final String longName;
@@ -33,13 +51,15 @@ public class Player implements Comparable<Player>{
         clubName = Atributos.parse("club_name", s[Atributos.CLUB_NAME.indice]);
     }
 
-    @Override
-    public int compareTo(Player p){
-        return this.playerId.compareTo(p.playerId);
-    }
-
     public static Comparator<Player> comparandoPor(Atributos... atributos){
-        return (playerAtual, outroPlayer) -> playerAtual.compareTo(outroPlayer, atributos);
+        Comparator<Player> comparator = new Comparator<Player>() {
+            @Override
+            public int compare(Player playerAtual, Player outroPlayer) {
+                return playerAtual.compareTo(outroPlayer, atributos);
+            }
+        };
+        return comparator;
+        //return (playerAtual, outroPlayer) -> playerAtual.compareTo(outroPlayer, atributos);
     }
 
     public int compareTo(Player p, Atributos... atributos){
