@@ -1,3 +1,5 @@
+package model;
+
 import filters.Atributes;
 import filters.Filters;
 import filters.Position;
@@ -38,8 +40,9 @@ public class Player{
     private final Integer weightKg;
     private final Integer clubTeamId;
     private final String clubName;
+    private final String playerFaceUrl;
 
-    Player(String[] s){
+    public Player(String[] s){
         playerId = Atributes.parse("player_id", s[Atributes.PLAYER_ID.index]);
         shortName = Atributes.parse("short_name", s[Atributes.SHORT_NAME.index]);
         longName = Atributes.parse("long_name", s[Atributes.LONG_NAME.index]);
@@ -53,6 +56,7 @@ public class Player{
         weightKg = Atributes.parse("weight_kg", s[Atributes.WEIGHT_KG.index]);
         clubTeamId = Atributes.parse("club_team_id", s[Atributes.CLUB_TEAM_ID.index]);
         clubName = Atributes.parse("club_name", s[Atributes.CLUB_NAME.index]);
+        playerFaceUrl = Atributes.parse("player_face_url", s[Atributes.PLAYER_FACE_URL.index]);
     }
 
     public static Comparator<Player> filters(Filters... filters){
@@ -98,6 +102,20 @@ public class Player{
         return false;
     }
 
+    public Object getValue(Atributes attribute){
+        return valueOf(attribute);
+    }
+
+    public String getDisplayValue(Atributes attribute){
+        Object value = getValue(attribute);
+
+        if(value == null){
+            return "";
+        }
+
+        return value.toString();
+    }
+
     private int compareFilter(Filters filter, Player otherPlayer){
         if(filter instanceof Atributes){
             Atributes attribute = (Atributes) filter;
@@ -140,6 +158,8 @@ public class Player{
                 return clubTeamId;
             case CLUB_NAME:
                 return clubName;
+            case PLAYER_FACE_URL:
+                return playerFaceUrl;
             default:
                 throw new IllegalArgumentException("Atributo sem comparacao configurada: " + attribute);
         }
@@ -174,7 +194,8 @@ public class Player{
                 csvValue(heightCm) + "," +
                 csvValue(weightKg) + "," +
                 csvValue(clubTeamId) + "," +
-                csvValue(clubName);
+                csvValue(clubName) + "," +
+                csvValue(playerFaceUrl);
     }
 
     private String csvValue(Object value){

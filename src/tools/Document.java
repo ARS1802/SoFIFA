@@ -39,21 +39,27 @@ public class Document {
     }
 
     public void setOutputFile(String path) throws IOException {
-        File outputFile = new File(path);
+        File outputFile;
+        String safePath = path == null || path.isBlank() ? "output" : path;
+        File chosenPath = new File(safePath);
 
-        if (!outputFile.isFile()) {
-            // Fallback: criar ./output/xxxx.csv
-            File outputDirectory = new File("output");
-            outputDirectory.mkdirs();
-
-            // Data e horario
+        if (!chosenPath.getName().toLowerCase().endsWith(".csv")) {
+            chosenPath.mkdirs();
             String fileName = LocalDateTime.now()
                     .format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")) + ".csv";
 
-            outputFile = new File(outputDirectory, fileName);
-            outputFile.createNewFile();
+            outputFile = new File(chosenPath, fileName);
+        }
+        else {
+            outputFile = chosenPath;
+            File parentDirectory = outputFile.getParentFile();
+
+            if(parentDirectory != null){
+                parentDirectory.mkdirs();
+            }
         }
 
+        outputFile.createNewFile();
         this.outputFile = outputFile;
 
         // Instanciacao de Stream

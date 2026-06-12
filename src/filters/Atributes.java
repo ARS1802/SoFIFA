@@ -22,7 +22,8 @@ public enum Atributes implements Filters {
     HEIGHT_CM("height_cm", Integer.class, 14),
     WEIGHT_KG("weight_kg", Integer.class, 15),
     CLUB_TEAM_ID("club_team_id", Integer.class, 19),
-    CLUB_NAME("club_name", String.class, 20);
+    CLUB_NAME("club_name", String.class, 20),
+    PLAYER_FACE_URL("player_face_url", String.class, 109);
 
     private final String csvColumn;
     private final Class<?> type;
