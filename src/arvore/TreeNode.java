@@ -1,4 +1,4 @@
-package Arvore;
+package arvore;
 
 public class TreeNode<T> {
     private TreeNode<T> left;
@@ -7,14 +7,14 @@ public class TreeNode<T> {
     private int FB = 0;
     private int height = 1;
 
-    public TreeNode(T elemento, TreeNode<T> proximo, TreeNode<T> anterior) {
-        this.element = elemento;
-        this.right = proximo;
-        this.left = anterior;
+    public TreeNode(T element, TreeNode<T> next, TreeNode<T> previous) {
+        this.element = element;
+        this.right = next;
+        this.left = previous;
     }
 
-    public TreeNode(T elemento) {
-        this.element = elemento;
+    public TreeNode(T element) {
+        this.element = element;
         this.right = null;
         this.left = null;
     }

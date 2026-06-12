@@ -1,10 +1,10 @@
-package Arvore;
+package arvore;
 
 import java.util.Comparator;
 //======== Alterações ==========
 /*
 *       => AVL<T extends Comparable<T>> -> AVL<T>
-*       => construtor AVL exige Comparator (Faça Player.comparandoPor(Atributos.PLAYER_ID); como default!)
+*       => construtor AVL exige Comparator (Faça Player.filters(Atributes.PLAYER_ID); como default!)
 *       => .comparTo -> comparator.compare(T left, T right)
  */
 //==============================

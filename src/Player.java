@@ -1,23 +1,27 @@
+import filters.Atributes;
+import filters.Filters;
+import filters.Position;
+
 import java.util.Comparator;
 
 
 //      Player inicialmente implements Comparable<Player>
-//      Entretanto, o metodo abaixo não permite que Atributos sejam passados!
+//      Entretanto, o metodo abaixo não permite que Atributes sejam passados!
 //    @Override
-//    public int compareTo(Player o) {
-//        return playerAtual.compareTo(outroPlayer, atributos);
+//    public int compareTo(Player otherPlayer) {
+//        return currentPlayer.compareTo(otherPlayer, filters);
 //    }
 
 //============================================================
 /*
  *       => interface Comparator<T> recebe os atributos
  *       => sobrescreve int compare(T obj1, T obj2) passando os atributos para um metodo prórpio
- *       => este metodo próprio é o compareTo(Player p, Atributos... atributos)
- *       => valorDe() retorna o respectivo atributo de sua respectiva classe.
+ *       => este metodo próprio é o compareTo(Player otherPlayer, Filters... filters)
+ *       => valueOf() retorna o respectivo atributo de sua respectiva classe.
  *               obs: todos os atributos de Player são do tipo Wrapper Classes, as quais implementam a interface Comaprables.
  *                    Possuindo isso em comum, todas implementam o próprio .compareTo()
- *                    Graças a isso, valorDe() retorna um Comparable da classe respectiva.
- *       => compararValores(Comparable valorAtual, Comparable valorOutro) recebe os atributos de Player e retorna o compareTo() respectivo ao seu tipo.
+ *                    Graças a isso, valueOf() retorna um Comparable da classe respectiva.
+ *       => compareFilterVaues(Comparable currentValue, Comparable otherValue) recebe os atributos de Player e retorna o compareTo() respectivo ao seu tipo.
  */
 //===========================================================
 public class Player{
@@ -36,50 +40,80 @@ public class Player{
     private final String clubName;
 
     Player(String[] s){
-        playerId = Atributos.parse("player_id", s[Atributos.PLAYER_ID.indice]);
-        shortName = Atributos.parse("short_name", s[Atributos.SHORT_NAME.indice]);
-        longName = Atributos.parse("long_name", s[Atributos.LONG_NAME.indice]);
-        playerPositions = Atributos.parse("player_positions", s[Atributos.PLAYER_POSITIONS.indice]);
-        overall = Atributos.parse("overall", s[Atributos.OVERALL.indice]);
-        potential = Atributos.parse("potential", s[Atributos.POTENTIAL.indice]);
-        valueEur = Atributos.parse("value_eur", s[Atributos.VALUE_EUR.indice]);
-        wageEur = Atributos.parse("wage_eur", s[Atributos.WAGE_EUR.indice]);
-        age = Atributos.parse("age", s[Atributos.AGE.indice]);
-        heightCm = Atributos.parse("height_cm", s[Atributos.HEIGHT_CM.indice]);
-        weightKg = Atributos.parse("weight_kg", s[Atributos.WEIGHT_KG.indice]);
-        clubTeamId = Atributos.parse("club_team_id", s[Atributos.CLUB_TEAM_ID.indice]);
-        clubName = Atributos.parse("club_name", s[Atributos.CLUB_NAME.indice]);
+        playerId = Atributes.parse("player_id", s[Atributes.PLAYER_ID.index]);
+        shortName = Atributes.parse("short_name", s[Atributes.SHORT_NAME.index]);
+        longName = Atributes.parse("long_name", s[Atributes.LONG_NAME.index]);
+        playerPositions = Atributes.parse("player_positions", s[Atributes.PLAYER_POSITIONS.index]);
+        overall = Atributes.parse("overall", s[Atributes.OVERALL.index]);
+        potential = Atributes.parse("potential", s[Atributes.POTENTIAL.index]);
+        valueEur = Atributes.parse("value_eur", s[Atributes.VALUE_EUR.index]);
+        wageEur = Atributes.parse("wage_eur", s[Atributes.WAGE_EUR.index]);
+        age = Atributes.parse("age", s[Atributes.AGE.index]);
+        heightCm = Atributes.parse("height_cm", s[Atributes.HEIGHT_CM.index]);
+        weightKg = Atributes.parse("weight_kg", s[Atributes.WEIGHT_KG.index]);
+        clubTeamId = Atributes.parse("club_team_id", s[Atributes.CLUB_TEAM_ID.index]);
+        clubName = Atributes.parse("club_name", s[Atributes.CLUB_NAME.index]);
     }
 
-    public static Comparator<Player> comparandoPor(Atributos... atributos){
+    public static Comparator<Player> filters(Filters... filters){
         Comparator<Player> comparator = new Comparator<Player>() {
             @Override
-            public int compare(Player playerAtual, Player outroPlayer) {
-                return playerAtual.compareTo(outroPlayer, atributos);
+            public int compare(Player currentPlayer, Player otherPlayer) {
+                return currentPlayer.compareTo(otherPlayer, filters);
             }
         };
         return comparator;
-        //return (playerAtual, outroPlayer) -> playerAtual.compareTo(outroPlayer, atributos);
+        //return (currentPlayer, otherPlayer) -> currentPlayer.compareTo(otherPlayer, filters);
     }
 
-    public int compareTo(Player p, Atributos... atributos){
-        if(atributos == null || atributos.length == 0){
-            return compararValores(playerId, p.playerId);
+    public int compareTo(Player otherPlayer, Filters... filters){
+        if(filters == null || filters.length == 0){
+            return compareFilterVaues(playerId, otherPlayer.playerId);
         }
 
-        for(Atributos atributo : atributos){
-            int resultado = compararValores(valorDe(atributo), p.valorDe(atributo));
+        for(Filters filter : filters){
+            int result = compareFilter(filter, otherPlayer);
 
-            if(resultado != 0){
-                return resultado;
+            if(result != 0){
+                return result;
             }
         }
 
-        return compararValores(playerId, p.playerId);
+        return compareFilterVaues(playerId, otherPlayer.playerId);
     }
 
-    private Comparable<?> valorDe(Atributos atributo){
-        switch(atributo){
+    public boolean playsAs(Position position){
+        if(playerPositions == null || playerPositions.isBlank()){
+            return false;
+        }
+
+        String[] positions = playerPositions.split(", ");
+
+        for(String currentPosition : positions){
+            if(currentPosition.equals(position.name())){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private int compareFilter(Filters filter, Player otherPlayer){
+        if(filter instanceof Atributes){
+            Atributes attribute = (Atributes) filter;
+            return compareFilterVaues(valueOf(attribute), otherPlayer.valueOf(attribute));
+        }
+
+        if(filter instanceof Position){
+            Position position = (Position) filter;
+            return Boolean.compare(otherPlayer.playsAs(position), this.playsAs(position));
+        }
+
+        throw new IllegalArgumentException("Filtro sem comparacao configurada: " + filter);
+    }
+
+    private Comparable<?> valueOf(Atributes attribute){
+        switch(attribute){
             case PLAYER_ID:
                 return playerId;
             case SHORT_NAME:
@@ -107,23 +141,23 @@ public class Player{
             case CLUB_NAME:
                 return clubName;
             default:
-                throw new IllegalArgumentException("Atributo sem comparacao configurada: " + atributo);
+                throw new IllegalArgumentException("Atributo sem comparacao configurada: " + attribute);
         }
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private int compararValores(Comparable valorAtual, Comparable valorOutro){
-        if(valorAtual == null && valorOutro == null){
+    private int compareFilterVaues(Comparable currentValue, Comparable otherValue){
+        if(currentValue == null && otherValue == null){
             return 0;
         }
-        if(valorAtual == null){
+        if(currentValue == null){
             return 1;
         }
-        if(valorOutro == null){
+        if(otherValue == null){
             return -1;
         }
 
-        return valorAtual.compareTo(valorOutro);
+        return currentValue.compareTo(otherValue);
     }
 
     @Override
