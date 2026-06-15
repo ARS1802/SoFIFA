@@ -52,32 +52,6 @@ public class FiltersPanel extends JPanel {
         updateCounterLabel();
     }
 
-    public Filters[] getSelectedFilters(){
-        List<Filters> selectedPositionFilters = new ArrayList<>();
-        List<Filters> selectedAttributeFilters = new ArrayList<>();
-
-        for(Map.Entry<JCheckBox, Filters> entry : filtersByCheckBox.entrySet()){
-            if(!entry.getKey().isSelected()){
-                continue;
-            }
-
-            Filters filter = entry.getValue();
-
-            if(filter instanceof Position){
-                selectedPositionFilters.add(filter);
-            }
-            else {
-                selectedAttributeFilters.add(filter);
-            }
-        }
-
-        List<Filters> selectedFilters = new ArrayList<>();
-        selectedFilters.addAll(selectedPositionFilters);
-        selectedFilters.addAll(selectedAttributeFilters);
-
-        return selectedFilters.toArray(new Filters[0]);
-    }
-
     public Position[] getSelectedPositions(){
         List<Position> selectedPositions = new ArrayList<>();
 
