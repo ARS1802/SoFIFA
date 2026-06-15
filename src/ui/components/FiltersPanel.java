@@ -39,7 +39,7 @@ public class FiltersPanel extends JPanel {
     private final JToggleButton ascendingOrderButton = createOrderButton(true);
     private final JButton applyButton = UITheme.blueButton("Aplicar");
 
-    private int playerLimit = 10;
+    private int playerLimit = 1800;
     private boolean ascendingOrder = true;
 
     public FiltersPanel(){
@@ -76,6 +76,34 @@ public class FiltersPanel extends JPanel {
         selectedFilters.addAll(selectedAttributeFilters);
 
         return selectedFilters.toArray(new Filters[0]);
+    }
+
+    public Position[] getSelectedPositions(){
+        List<Position> selectedPositions = new ArrayList<>();
+
+        for(Map.Entry<JCheckBox, Filters> entry : filtersByCheckBox.entrySet()){
+            if(!entry.getKey().isSelected() || !(entry.getValue() instanceof Position)){
+                continue;
+            }
+
+            selectedPositions.add((Position) entry.getValue());
+        }
+
+        return selectedPositions.toArray(new Position[0]);
+    }
+
+    public Filters[] getSelectedAttributeFilters(){
+        List<Filters> selectedAttributeFilters = new ArrayList<>();
+
+        for(Map.Entry<JCheckBox, Filters> entry : filtersByCheckBox.entrySet()){
+            if(!entry.getKey().isSelected() || entry.getValue() instanceof Position){
+                continue;
+            }
+
+            selectedAttributeFilters.add(entry.getValue());
+        }
+
+        return selectedAttributeFilters.toArray(new Filters[0]);
     }
 
     public int getPlayerLimit(){

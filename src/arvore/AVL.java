@@ -45,10 +45,13 @@ public class AVL<T> {
     public void add(T value){
         if(this.root == null){
             this.root = new TreeNode<>(value);
+            nodeAmount++;
             return;
         }
-        nodeAmount++;
-        addRecursivelly(value, root, null);
+
+        if(addRecursivelly(value, root, null)){
+            nodeAmount++;
+        }
     }
 
     public boolean remove(T value){
@@ -195,21 +198,30 @@ public class AVL<T> {
         return false;
     }
 
-    private void addRecursivelly(T value, TreeNode<T> data, TreeNode<T> parent){
-        if(comparator.compare(value, data.getElement()) < 0){ // Entrada e menor que o node (esta na esquerda)
+    private boolean addRecursivelly(T value, TreeNode<T> data, TreeNode<T> parent){
+        boolean added = false;
+        int comparison = comparator.compare(value, data.getElement());
+
+        if(comparison < 0){ // Entrada e menor que o node (esta na esquerda)
             if(data.getLeft() == null){
                 data.setLeft(new TreeNode<>(value));
+                added = true;
             }else{
-                addRecursivelly(value, data.getLeft(), data);
+                added = addRecursivelly(value, data.getLeft(), data);
             }
         }
 
-        else if(comparator.compare(value, data.getElement()) > 0){// Entrada e maior que o node (esta na direita)
+        else if(comparison > 0){// Entrada e maior que o node (esta na direita)
             if(data.getRight() == null){
                 data.setRight(new TreeNode<>(value));
+                added = true;
             }else{
-                addRecursivelly(value, data.getRight(), data);
+                added = addRecursivelly(value, data.getRight(), data);
             }
+        }
+
+        if(!added){
+            return false;
         }
 
         updateNodeState(data);
@@ -226,6 +238,8 @@ public class AVL<T> {
             }
             rotateLeft(data, parent);
         }
+
+        return true;
     }
 
     private void rotateRight(TreeNode<T> data, TreeNode<T> parent){

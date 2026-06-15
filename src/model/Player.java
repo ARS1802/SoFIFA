@@ -4,28 +4,11 @@ import filters.Atributes;
 import filters.Filters;
 import filters.Position;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 
-//      Player inicialmente implements Comparable<Player>
-//      Entretanto, o metodo abaixo não permite que Atributes sejam passados!
-//    @Override
-//    public int compareTo(Player otherPlayer) {
-//        return currentPlayer.compareTo(otherPlayer, filters);
-//    }
-
-//============================================================
-/*
- *       => interface Comparator<T> recebe os atributos
- *       => sobrescreve int compare(T obj1, T obj2) passando os atributos para um metodo prórpio
- *       => este metodo próprio é o compareTo(Player otherPlayer, Filters... filters)
- *       => valueOf() retorna o respectivo atributo de sua respectiva classe.
- *               obs: todos os atributos de Player são do tipo Wrapper Classes, as quais implementam a interface Comaprables.
- *                    Possuindo isso em comum, todas implementam o próprio .compareTo()
- *                    Graças a isso, valueOf() retorna um Comparable da classe respectiva.
- *       => compareFilterVaues(Comparable currentValue, Comparable otherValue) recebe os atributos de Player e retorna o compareTo() respectivo ao seu tipo.
- */
-//===========================================================
 public class Player{
     private final Integer playerId;
     private final String shortName;
@@ -59,6 +42,7 @@ public class Player{
         playerFaceUrl = Atributes.parse("player_face_url", s[Atributes.PLAYER_FACE_URL.index]);
     }
 
+    // Comparacao principal usada por listas, tabelas e AVL.
     public static Comparator<Player> filters(Filters... filters){
         Comparator<Player> comparator = new Comparator<Player>() {
             @Override
@@ -72,29 +56,48 @@ public class Player{
 
     public int compareTo(Player otherPlayer, Filters... filters){
         if(filters == null || filters.length == 0){
-            return compareFilterVaues(playerId, otherPlayer.playerId);
+            return compareValues(playerId, otherPlayer.playerId);
+        }
+
+        Position[] selectedPositions = selectedPositionsFrom(filters);
+        int positionResult = comparePositions(otherPlayer, selectedPositions);
+
+        if(positionResult != 0){
+            return positionResult;
         }
 
         for(Filters filter : filters){
-            int result = compareFilter(filter, otherPlayer);
+            if(filter instanceof Position){
+                continue;
+            }
+
+            int result = compareAttributeFilter(filter, otherPlayer);
 
             if(result != 0){
                 return result;
             }
         }
 
-        return compareFilterVaues(playerId, otherPlayer.playerId);
+        return compareValues(playerId, otherPlayer.playerId);
     }
 
+    // Regras publicas de posicao.
     public boolean playsAs(Position position){
-        if(playerPositions == null || playerPositions.isBlank()){
+        if(position == null || playerPositions == null || playerPositions.isBlank()){
             return false;
         }
 
-        String[] positions = playerPositions.split(", ");
+        String positions = "," + playerPositions.replace(" ", "") + ",";
+        return positions.contains("," + position.name() + ",");
+    }
 
-        for(String currentPosition : positions){
-            if(currentPosition.equals(position.name())){
+    public boolean matchesAnyPosition(Position... positions){
+        if(positions == null || positions.length == 0){
+            return true;
+        }
+
+        for(Position position : positions){
+            if(playsAs(position)){
                 return true;
             }
         }
@@ -102,6 +105,37 @@ public class Player{
         return false;
     }
 
+    public int comparePositions(Player otherPlayer, Position... positions){
+        if(positions == null || positions.length == 0){
+            return 0;
+        }
+
+        int currentMatchedPositions = selectedPositionCount(positions);
+        int otherMatchedPositions = otherPlayer.selectedPositionCount(positions);
+        int matchedPositionsResult = Integer.compare(otherMatchedPositions, currentMatchedPositions);
+
+        if(matchedPositionsResult != 0){
+            return matchedPositionsResult;
+        }
+
+        int positionAmountResult = Integer.compare(positionAmount(), otherPlayer.positionAmount());
+
+        if(positionAmountResult != 0){
+            return positionAmountResult;
+        }
+
+        for(Position position : positions){
+            int result = comparePosition(position, otherPlayer);
+
+            if(result != 0){
+                return result;
+            }
+        }
+
+        return 0;
+    }
+
+    // Valores usados pela tabela e painel de detalhes.
     public Object getValue(Atributes attribute){
         return valueOf(attribute);
     }
@@ -116,20 +150,89 @@ public class Player{
         return value.toString();
     }
 
-    private int compareFilter(Filters filter, Player otherPlayer){
-        if(filter instanceof Atributes){
-            Atributes attribute = (Atributes) filter;
-            return compareFilterVaues(valueOf(attribute), otherPlayer.valueOf(attribute));
+    // Exportacao CSV.
+    @Override
+    public String toString(){
+        return csvValue(playerId) + "," +
+                csvValue(shortName) + "," +
+                csvValue(longName) + "," +
+                csvValue(playerPositions) + "," +
+                csvValue(overall) + "," +
+                csvValue(potential) + "," +
+                csvValue(valueEur) + "," +
+                csvValue(wageEur) + "," +
+                csvValue(age) + "," +
+                csvValue(heightCm) + "," +
+                csvValue(weightKg) + "," +
+                csvValue(clubTeamId) + "," +
+                csvValue(clubName) + "," +
+                csvValue(playerFaceUrl);
+    }
+
+    // Helpers de filtros.
+    private Position[] selectedPositionsFrom(Filters... filters){
+        List<Position> selectedPositions = new ArrayList<>();
+
+        for(Filters filter : filters){
+            if(filter instanceof Position){
+                selectedPositions.add((Position) filter);
+            }
         }
 
-        if(filter instanceof Position){
-            Position position = (Position) filter;
-            return Boolean.compare(otherPlayer.playsAs(position), this.playsAs(position));
+        return selectedPositions.toArray(new Position[0]);
+    }
+
+    private int compareAttributeFilter(Filters filter, Player otherPlayer){
+        if(filter instanceof Atributes){
+            Atributes attribute = (Atributes) filter;
+            return compareValues(valueOf(attribute), otherPlayer.valueOf(attribute));
         }
 
         throw new IllegalArgumentException("Filtro sem comparacao configurada: " + filter);
     }
 
+    // Helpers de posicao.
+    private int selectedPositionCount(Position... positions){
+        int selectedPositionCount = 0;
+
+        for(Position position : positions){
+            if(playsAs(position)){
+                selectedPositionCount++;
+            }
+        }
+
+        return selectedPositionCount;
+    }
+
+    private int comparePosition(Position position, Player otherPlayer){
+        return Integer.compare(otherPlayer.positionPriority(position), this.positionPriority(position));
+    }
+
+    private int positionPriority(Position position){
+        if(!playsAs(position)){
+            return 0;
+        }
+
+        if(normalizedPositions().equals(position.name())){
+            return 2;
+        }
+
+        return 1;
+    }
+
+    private int positionAmount(){
+        if(playerPositions == null || playerPositions.isBlank()){
+            return 0;
+        }
+
+        return normalizedPositions().split(",").length;
+    }
+
+    private String normalizedPositions(){
+        return playerPositions.replace(" ", "");
+    }
+
+    // Helpers de atributos e valores.
     private Comparable<?> valueOf(Atributes attribute){
         switch(attribute){
             case PLAYER_ID:
@@ -166,7 +269,7 @@ public class Player{
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private int compareFilterVaues(Comparable currentValue, Comparable otherValue){
+    private int compareValues(Comparable currentValue, Comparable otherValue){
         if(currentValue == null && otherValue == null){
             return 0;
         }
@@ -180,24 +283,7 @@ public class Player{
         return currentValue.compareTo(otherValue);
     }
 
-    @Override
-    public String toString(){
-        return csvValue(playerId) + "," +
-                csvValue(shortName) + "," +
-                csvValue(longName) + "," +
-                csvValue(playerPositions) + "," +
-                csvValue(overall) + "," +
-                csvValue(potential) + "," +
-                csvValue(valueEur) + "," +
-                csvValue(wageEur) + "," +
-                csvValue(age) + "," +
-                csvValue(heightCm) + "," +
-                csvValue(weightKg) + "," +
-                csvValue(clubTeamId) + "," +
-                csvValue(clubName) + "," +
-                csvValue(playerFaceUrl);
-    }
-
+    // Helper de escrita CSV.
     private String csvValue(Object value){
         if(value == null){
             return "";

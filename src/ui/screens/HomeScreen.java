@@ -2,6 +2,8 @@ package ui.screens;
 
 import arvore.AVL;
 import filters.Atributes;
+import filters.Filters;
+import filters.Position;
 import model.Player;
 import tools.Document;
 import ui.components.FiltersPanel;
@@ -78,13 +80,16 @@ public class HomeScreen extends JFrame {
         try {
             document = new Document(inputPath);
 
-            Comparator<Player> comparator = Player.filters(filtersPanel.getSelectedFilters());
-            currentPlayersTree = new AVL<>(comparator);
-            currentPlayers = loadPlayers(document, currentPlayersTree, comparator);
+            Position[] selectedPositions = filtersPanel.getSelectedPositions();
+            Filters[] selectedAttributeFilters = filtersPanel.getSelectedAttributeFilters();
+            Comparator<Player> comparator = createPlayerComparator(
+                    selectedPositions,
+                    selectedAttributeFilters,
+                    filtersPanel.isAscendingOrder()
+            );
 
-            if(!filtersPanel.isAscendingOrder()){
-                Collections.reverse(currentPlayers);
-            }
+            currentPlayersTree = new AVL<>(comparator);
+            currentPlayers = loadPlayers(document, currentPlayersTree, comparator, selectedPositions);
 
             currentPlayers = limitPlayers(currentPlayers, filtersPanel.getPlayerLimit());
 
@@ -104,10 +109,33 @@ public class HomeScreen extends JFrame {
         }
     }
 
+    private Comparator<Player> createPlayerComparator(
+            Position[] selectedPositions,
+            Filters[] selectedAttributeFilters,
+            boolean ascendingOrder
+    ){
+        return (currentPlayer, otherPlayer) -> {
+            int positionResult = currentPlayer.comparePositions(otherPlayer, selectedPositions);
+
+            if(positionResult != 0){
+                return positionResult;
+            }
+
+            int attributeResult = currentPlayer.compareTo(otherPlayer, selectedAttributeFilters);
+
+            if(!ascendingOrder){
+                return -attributeResult;
+            }
+
+            return attributeResult;
+        };
+    }
+
     private List<Player> loadPlayers(
             Document sourceDocument,
             AVL<Player> playersTree,
-            Comparator<Player> comparator
+            Comparator<Player> comparator,
+            Position[] selectedPositions
     ) throws IOException {
         List<Player> players = new ArrayList<>();
 
@@ -118,6 +146,11 @@ public class HomeScreen extends JFrame {
 
             if(row != null){
                 Player player = new Player(row);
+
+                if(!player.matchesAnyPosition(selectedPositions)){
+                    continue;
+                }
+
                 playersTree.add(player);
                 players.add(player);
             }
